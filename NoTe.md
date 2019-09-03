@@ -27,3 +27,17 @@ app.get("/",function(req,res){
 ```js
 node app.js
 ```
+
+第一次上传代码到Github建议步骤
+* 先在Github上建一个repository
+* 用本地的Git开始操作
+```shell
+$ git init
+$ git add .
+$ git commit -m '后台开始搭建'
+$ git remote add origin git@github.com:shaolun-Ryan/PacificVIS.git
+$ $ git push -u origin master
+
+```
+* 完成
+* *没有SSH秘钥的过程，如果是计算机第一次建库，还要绑定一下计算机的密匙*
