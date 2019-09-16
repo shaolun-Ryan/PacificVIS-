@@ -201,3 +201,68 @@ websocket是一种双工流的传输协议，类似于http。
 关于后台数据查询的问题
 ---
 目前想到的解决方案是把数据转到前台，前台取到数据后做查询操作。
+***
+安装webpack和webpack-dev-server
+---
+* 分别运行两个安装(全局和本地)
+```npm i webpack -g```
+```npm i webpack-dev-server -g```
+```npm i webpack-cli -g -S```
+```npm i webpack -D```
+```npm i webpack-dev-server -D```
+```npm i webpack-cli -D -S```
+```npm i nodemon -D```
+
+* 配置wenpack的配置文件
+    * 在项目根目录新建wenpack.config.js
+    * 配置路径
+
+```js
+//配置文件，js文件，向外暴露了一个配置对象
+module.exports = {
+    entry: path.join(__dirname,'./src/main.js'),
+    output: {
+        //输出文件的配置
+        path: path.join(__dirname,'./dist'),
+        filename: 'bundle.js'
+    }
+}
+```
+
+* 配置webpack-dev-server
+    * 配置热更新命令
+        * 进入package.json文件
+        * 找到scripts，里面是一些启动命令
+        * 加入
+```shell
+ "dev": "webpack-dev-server --open --port 8079 --hot --inline --progress --config build/webpack.dev.conf.js",
+
+"start": "nodemon ./server/app.js",
+```
+
+到这里基本上就配置好了，以后启动只需要：
+前台：```npm run dev```
+后台：```npm run start```
+***
+搭建vue组件
+---
+* 安装vue-cli
+    * 全局安装webpack ```npm i webpack -g```
+    * webpack和webpack-dev-server的版本问题很重要
+    * 本次项目的两个版本分别是：
+    ```json
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.9.1"
+    ```
+    *一个方法：对一些npm package报错的时候，可以直接删了node_modules的文件夹，再npm install安装一遍，有些问题会迎刃而解.(所以package.json文件很重要)*
+
+* 安装vue-cli
+```npm install --global vue-cli```
+测试:```vue -V```
+
+* 开始构建项目
+```vue init webpack PROJECTNAME```
+之后就在你current folder里生成了一个vue项目的标准文件夹 PROJECTNAME
+
+* 安装依赖
+```npm install```
