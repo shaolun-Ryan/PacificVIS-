@@ -4,11 +4,9 @@ const csv = require('fast-csv')
 
 
 module.exports = (req,res) => {
-    // res.send("测试流数据");//滚jB蛋吧坑货
 
-
-    const stream = fs.createReadStream('./app/sampleTree_610000.csv',{
-        highWaterMark:150
+    const stream = fs.createReadStream('./static/data/9.17.2.csv',{
+        // highWaterMark:150
     })
 
     console.log('now we are listening 3000 port');
