@@ -201,6 +201,8 @@ websocket是一种双工流的传输协议，类似于http。
 关于后台数据查询的问题
 ---
 目前想到的解决方案是把数据转到前台，前台取到数据后做查询操作。
+或者将读到的数据生成一个静态文件，然后发送ajax请求来查找
+
 ***
 安装webpack和webpack-dev-server
 ---
@@ -266,3 +268,57 @@ module.exports = {
 
 * 安装依赖
 ```npm install```
+***
+同步异步、单线程多线程的理解
+---
+* 同步就好比，餐厅的服务员，必须要服务完A桌才服务B桌，就是连给B拿菜单这样一个小小的动作都不可以。即所有程序的执行，严格遵守ABCD的顺序，不能插队。
+异步，即可以插队，将花销大量时间的IO操作，不再等候，处理器去进行别的任务。
+
+* 单线程即表示，有一个服务员
+多线程即有多个服务员
+***
+Promise()的使用
+---
+Promise（）就是处理nodejs（异步高并发）的异步请求，而且异步请求包含很多的回调函数。所以理论上可以吧任意的异步的回调函数写成promise的形式。
+* 把回调
+```js
+readdir:function(path){
+    return new Promise(resolve=>{
+        fs.readdir(path,(err,files)=>{
+            if(err){
+                throw err
+            }
+        resolve(files)
+        })
+    })
+}
+
+fs.readdir('../README.md')
+    .then(content=>{
+        console.log(content)
+    })
+```
+上面代码里then回调函数的参数content就是封装的promise函数里resolve()传的值files
+
+* 使用方法like this：
+```js
+new Promise(function (resolve, reject) {
+    log('start new Promise...');
+    var timeOut = Math.random() * 2;
+    log('set timeout to: ' + timeOut + ' seconds.');
+    setTimeout(function () {
+        if (timeOut < 1) {
+            log('call resolve()...');
+            resolve('200 OK');
+        }
+        else {
+            log('call reject()...');
+            reject('timeout in ' + timeOut + ' seconds.');
+        }
+    }, timeOut * 1000);
+}).then(function (r) {
+    log('Done: ' + r);
+}).catch(function (reason) {
+    log('Failed: ' + reason);
+});
+```
