@@ -20,14 +20,14 @@ export default {
         d3(){
 
             d3.csv('../../static/data/9.17.csv',(err,data)=>{
-                console.log(data);
+                // console.log(data);
             })
         }
     },
 
     mounted(){
        this.axios
-        .get('http://localhost:1996/stream')
+        .get('/stream')
         .then(response =>{
             this.data = response
         })

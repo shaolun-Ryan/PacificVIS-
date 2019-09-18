@@ -322,3 +322,24 @@ new Promise(function (resolve, reject) {
     log('Failed: ' + reason);
 });
 ```
+***
+Vue解决跨域CORS问题
+---
+建议安装http-proxy-middleware组件
+```npm install http-proxy-middleware -S```
+安装之后，有两种方法启用http-proxy-middleware
+* 在webpack.dev.conf.js中的devServer中加入：
+```js
+proxy:{
+      '/stream':{target:'http://localhost:1996',changeOrigin:true}
+    },
+```
+
+* 或者在app.js中加入
+```js
+const proxy = require('http-proxy-middleware')
+
+app.use(
+    proxy('/stream', {target: 'http://localhost:1996'})
+  );
+```
