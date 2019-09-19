@@ -7,35 +7,47 @@
 
 <script>
 import * as d3 from 'd3';
+import promisePoller from 'promise-poller'
+
 
 export default {
     data(){
         return{
             message:'川普NMSL',
-            data: null
+            data: null,
+            a:0
         }
     },
+
+    
 
     methods:{
         d3(){
 
-            d3.csv('../../static/data/9.17.csv',(err,data)=>{
-                // console.log(data);
+            
+        },
+
+        getData(){
+            this.axios.get('/stream')
+            .then(response =>{
+                this.a += 1
+                console.log(this.a);
+
+                //开始轮询请求数据
+                setTimeout(()=>{
+                    this.getData()
+                },100)//此处的时间就是每次间隔的时间，向后台发一次请求
+                // this.data =  response.data
             })
         }
+
+
     },
 
     mounted(){
-       this.axios
-        .get('/stream')
-        .then(response =>{
-            this.data = response
-        })
-        .catch(err =>{
-            console.log(err);
-        })
-
-        this.d3()
+        
+        this.getData()
+        
     }
 }
 </script>

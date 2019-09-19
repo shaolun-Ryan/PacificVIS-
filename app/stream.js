@@ -1,56 +1,96 @@
+//在这个处理函数中，在回调函数中声明的变量（最终的结果数组job_arr等等），在外部都获取不到，不知道什么原因
+//暂时推荐写在控制流中的函数，可以识别并且获取到
+
 const fs = require('fs')
+
+const through2 = require('through2')
 
 const csv = require('fast-csv')
 
-
 module.exports = (req,res) => {
 
-    const stream = fs.createReadStream('./static/data/9.17.2.csv',{
-        // highWaterMark:150
-    })
 
-    console.log('now we are listening 3000 port');
-
-    stream.on('open',()=>{
-        console.log('file is open');
-    })
+const rs = fs.createReadStream('./app/sampleTree_690000.csv')
 
 
-    let counter = 0
-
-    stream.pipe(csv.parse({
-        // objectMode:false,//对象模式，如果设置成false的话就不会输出成对象的结构了
-        headers:true}))
-    .on('data',(chunk)=>{
-        console.log('yes');
-        console.log(counter)
-        // console.log(chunk.length);
-        // console.log(chunk.toString());
-        // console.log(chunk);
-
-        //控制data stream的速度
-        // stream.pause()
-
-        // setTimeout(()=>{
-        //     stream.resume()
-        //     console.log('数据重新开始流动');
-        // },1000)
-
-        counter++;
-    })
-
-    stream.on('error',(err)=>{
-        console.log(err);
-    })
-
-    stream.on('end',()=>{
-        console.log('file read is end');
-    })
+    //监听读取的打开
+rs.on('open',()=>{
+    console.log('开始读取');
+})
 
 
-    stream.pipe(res)
-    
+//开始处理
 
-    
+
+let i = 0
+    job_arr_exist = new Array()
+    job_arr = new Array()
+    counter = -1//job_arr的计数器
+
+
+let skip = through2({objectMode:true},function (chunk, encoding, callback) {
+
+    // if(chunk.job_name == 'j_926983'){
+    //     i+=1
+
+    // let a = {
+    //     ed: chunk.inst_name
+    // }
+    // this.push(`${JSON.stringify(a)},`)
+    // }
+
+
+
+    if(job_arr_exist.indexOf(chunk.job_name) == -1){
+
+        if(job_arr.length != 0){
+            this.push(`${JSON.stringify(job_arr[counter])}`)
+        }
+
+        job_arr_exist.push(chunk.job_name)
+        let a = new Object()
+        a.job_name = chunk.job_name
+        //设置高负载的阈值为90%
+        if(chunk.cpu_avg > 90){
+            a.num_hignLoad = 1
+        }else{
+            a.num_hignLoad = 0
+        }
+        job_arr.push(a)
+
+        counter++
+    }else{
+        if(chunk.cpu_avg > 90){
+            //默认不用查找job，默认相同job都是连在一起的
+            job_arr[counter].num_hignLoad++
+        }
+    }
+
+    callback()
+
+  })
+
+
+rs.on('data',data=>{
+    // console.log('正在读取')
+    // rs.pause()
+
+    // setInterval(()=>{S
+    //     rs.resume()
+    // },5000)
+
+
+})
+
+rs.pipe(csv.parse({headers:true})).pipe(skip).pipe(res)
+
+
+// res.send('123')
+
+
+rs.on('end',()=>{
+    console.log('读取结束');
+    // console.log(i);
+})
 
 }

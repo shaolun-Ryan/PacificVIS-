@@ -9,6 +9,8 @@
     "express": "^4.17.1",
     "fast-csv": "^3.4.0",
     "http-proxy-middleware": "^0.20.0",
+    "promise-poller": "^1.7.0",
+    "through2": "^3.0.1",
     "vue": "^2.6.10",
     "vue-axios": "^2.1.4",
     "webpack-cli": "^3.3.8"
