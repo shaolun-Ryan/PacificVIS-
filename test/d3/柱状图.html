@@ -1,0 +1,134 @@
+<!-- 不知道为什么，在加入每个柱子的宽度的递减之后，渲染就变得很慢 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas width=2500px height="1000"></canvas>
+    <script src="d3.v4.min.js"></script>
+    <script>
+
+    const canvas = document.querySelector('canvas')
+        ctx = canvas.getContext('2d')
+
+        //定义坐标轴的位置
+    const border_left = 80
+        border_right = 80
+        border_up = 80
+        border_down = 80
+        arrow_length = 20
+        arrow_angle = Math.PI * (1/6)
+
+        //获取画布大小
+    const canvas_width = canvas.width
+        canvas_height = canvas.height
+
+        d3.json('./data/920.json',data=>{
+            // console.log(data);//已获取到data
+
+        //基础色块的宽度
+        const width = 20
+
+        const scale = d3.scalePow().exponent(0.2)
+        .domain([0,data.length])
+        .range([80,0])
+
+        //封装画色块的函数
+        function prt_block(location_x,location_y,highLoadHeight,normalLoadHeight,imgData_width){
+
+        // let radio = highLoadHeight/(highLoadHeight+normalLoadHeight)
+
+
+        // const imgData_width = width/radio
+
+
+        
+        // if(highLoadHeight + normalLoadHeight > 600){
+        //     highLoadHeight = (highLoadHeight/highLoadHeight+normalLoadHeight)*600
+        //     normalLoadHeight = (normalLoadHeight/highLoadHeight+normalLoadHeight)*600
+        // }
+
+        //色块位置
+        // const location_x = 50
+        // location_y = 50
+
+        //根据高负载machine个数决定上部色块的高度
+        // const highLoadHeight = 200
+
+        //根据正常machine个数决定上部色块的高度   
+        // const normalLoadHeight = 100
+
+        //过渡色区的一半高度
+        const transparency_half = 10
+
+        const imgData_height = highLoadHeight+normalLoadHeight+2*transparency_half
+
+        const imgData = ctx.createImageData(imgData_width,imgData_height)
+
+        const transparency_up = d3.scaleLinear()
+        .domain([imgData.data.length*(highLoadHeight/imgData_height),imgData.data.length*((highLoadHeight+transparency_half)/imgData_height)])
+        .range([255,0])
+
+        transparency_down = d3.scaleLinear()
+        .domain([imgData.data.length*((highLoadHeight+transparency_half)/imgData_height),imgData.data.length*((highLoadHeight+transparency_half+transparency_half)/imgData_height)])
+        .range([0,255])
+
+        // console.log(imgData.data);//Uint8ClampedArray(40000) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …]
+        for(i=0;i<imgData.data.length*(highLoadHeight/imgData_height);i+=4){
+            imgData.data[i+0] = 191
+            imgData.data[i+1] = 71
+            imgData.data[i+2] = 44
+            imgData.data[i+3] = 255
+        }
+
+        for(i=imgData.data.length*(highLoadHeight/imgData_height);i<imgData.data.length*((highLoadHeight+transparency_half)/imgData_height);i+=4){
+            imgData.data[i+0] = 191
+            imgData.data[i+1] = 71
+            imgData.data[i+2] = 44
+            imgData.data[i+3] = transparency_up(i)
+        }
+
+        for(i=imgData.data.length*((highLoadHeight+transparency_half)/imgData_height);i<imgData.data.length*((highLoadHeight+transparency_half+transparency_half)/imgData_height);i+=4){
+            imgData.data[i+0] = 242
+            imgData.data[i+1] = 136
+            imgData.data[i+2] = 75
+            imgData.data[i+3] = transparency_down(i)
+        }
+
+        for(i=imgData.data.length*((highLoadHeight+transparency_half+transparency_half)/imgData_height);i<imgData.data.length;i+=4){
+            imgData.data[i+0] = 242
+            imgData.data[i+1] = 136
+            imgData.data[i+2] = 75
+            imgData.data[i+3] = 255
+        }
+        ctx.putImageData(imgData,location_x,location_y)
+
+        }
+
+        //封装blocks的排序函数
+        function ttt(a,b){
+            return b.num_hign/b.num_normal - a.num_hign/a.num_normal
+        }
+
+        let x = 20
+
+        data = data.sort(ttt)
+
+        console.log(data);
+
+        data.forEach((d,i)=>{
+            if(d.num_normal != 0){
+            prt_block(x+=(width/(d.num_hign/(d.num_hign+d.num_normal))),20,d.num_hign,d.num_normal)
+            // prt_block(x+=scale(i),20,d.num_hign,d.num_normal,scale(i))
+            console.log(scale(i));
+            }
+        })
+
+        }) 
+    </script>
+</body>
+</html>

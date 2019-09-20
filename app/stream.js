@@ -52,9 +52,11 @@ let skip = through2({objectMode:true},function (chunk, encoding, callback) {
         a.job_name = chunk.job_name
         //设置高负载的阈值为90%
         if(chunk.cpu_avg > 90){
-            a.num_hignLoad = 1
+            a.num_hign = 1
+            a.num_normal = 0
         }else{
-            a.num_hignLoad = 0
+            a.num_hign = 0
+            a.num_normal = 1
         }
         job_arr.push(a)
 
@@ -62,7 +64,9 @@ let skip = through2({objectMode:true},function (chunk, encoding, callback) {
     }else{
         if(chunk.cpu_avg > 90){
             //默认不用查找job，默认相同job都是连在一起的
-            job_arr[counter].num_hignLoad++
+            job_arr[counter].num_hign++
+        }else{
+            job_arr[counter].num_normal++
         }
     }
 

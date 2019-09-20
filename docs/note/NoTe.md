@@ -361,3 +361,6 @@ setInterval和setTimeout
 ***
 明天来了之后，把through2中的统计做一下+研究nodejs stream的文档
 tips：统计完之后在vuex中做一个标志位，前端监听到后开始渲染
+***
+不打算在后台将数据格式化 因为实在太难了
+打算在前台取到之后再用正则表达式将其格式化成JSON数组格式

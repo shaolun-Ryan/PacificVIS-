@@ -36,6 +36,8 @@ export default {
                 let data =  response.data.split('}{').join('},{')//有结果输出，说明在前台可以取到数据
                 data = '['.concat(data).concat(']')//完成了数据的格式化，data是一个JSON数组
 
+                this.data = data
+
                 this.d3(data)
                 //开始轮询请求数据
                 setTimeout(()=>{
