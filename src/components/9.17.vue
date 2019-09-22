@@ -1,11 +1,16 @@
 <template>
     <div>
+        <el-row>
         <!-- 定义按钮 -->
-        <div>
-            <el-button :title="btn1" @click="updateBack">Init Stream</el-button>
-            <el-button :title="btn2" @click="pauseBack">Pause Stream</el-button>
-
-        </div>
+            <el-col :span="12">
+                <el-button  type="info" :title="btn1" @click="updateBack"><font size='5'><i class="el-icon-d-arrow-right"></i></font> Init Stream</el-button>
+                <el-button  type="info" :title="btn2" @click="pauseBack"><font size='5'><i class="el-icon-video-pause"></i></font> Pause Stream</el-button>
+            </el-col>
+            <el-col :span="3" :offset="3">
+                <el-switch v-model="value1" disabled></el-switch>
+            </el-col>
+        </el-row>
+        <div id="view"></div>
     </div>
 </template>
 
@@ -22,7 +27,8 @@ export default {
             a:0,
             btn1:'Click to update data steam in back server.',
             btn2:'Click to pause view updating.',
-            stream_flag:true
+            stream_flag:true,
+            value1:true
         }
     },
 
@@ -54,7 +60,7 @@ export default {
             const height = 700
             const margin = {top: 10, right: 10, bottom: 50, left: 40}
 
-            const svg = d3.select('body')
+            const svg = d3.select('#view')
             .append('svg')
             .attr('class','background')
             .attr('width',width)
