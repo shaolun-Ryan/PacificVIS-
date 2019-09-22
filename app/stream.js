@@ -10,12 +10,24 @@ const csv = require('fast-csv')
 module.exports = (req,res) => {
 
 
+const events = require('events')
+
+let myEmitter = new events.EventEmitter()
+
+myEmitter.on('some',()=>{
+
+    rs.pipe(csv.parse({headers:true})).pipe(skip).pipe(res)
+
+})
+
+
 const rs = fs.createReadStream('./app/sampleTree_690000.csv')
 
 
     //监听读取的打开
 rs.on('open',()=>{
     console.log('开始读取');
+    // console.log(store.state.t);//不得行，nodejs暂时不会如何获取vuex
 })
 
 
@@ -75,6 +87,10 @@ let skip = through2({objectMode:true},function (chunk, encoding, callback) {
   })
 
 
+if(req.query.stream_flag == 'true'){
+    myEmitter.emit('some',req.query.stream_flag)
+}
+
 rs.on('data',data=>{
     // console.log('正在读取')
     // rs.pause()
@@ -86,7 +102,6 @@ rs.on('data',data=>{
 
 })
 
-rs.pipe(csv.parse({headers:true})).pipe(skip).pipe(res)
 
 
 // res.send('123')

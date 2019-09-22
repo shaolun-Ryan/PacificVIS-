@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script src="d3.v4.min.js"></script>
+    <script>
+
+        const width = 1500
+        height = 700
+        margin = {top: 10, right: 10, bottom: 50, left: 40}
+
+        const svg = d3.select('body')
+        .append('svg')
+        .attr('class','background')
+        .attr('width',width)
+        .attr('height',height)
+
+        svg.append("rect")
+        .attr("class", "background")
+        .attr("width", width-margin.left-margin.right)
+        .attr("height", height-margin.top-margin.bottom)
+        .attr('transform',`translate(${margin.left},${margin.right})`)
+
+
+        d3.json('./data/9210.json',(err,dt1)=>{
+
+            let data = new Array()
+
+//             dt1.forEach(d=>{
+//                 if((d.num_hign > 500 && d.normal == 0) || d.normal != 0){
+//                     data.push(d)
+//                 }
+//             })
+
+// console.log(data);
+
+            // let series = d3.stack().keys(data.columns.slice(1))(data)
+            let stack = d3.stack().keys(['num_hign','num_normal'])
+
+            let dt = stack(data)
+
+            function ttt(a,b){
+            return b.num_hign/b.num_normal - a.num_hign/a.num_normal
+        }
+
+        //排序函数
+        data = data.sort(ttt)
+
+            console.log(data);
+            console.log(dt);
+
+            
+            let x = d3.scaleBand()
+            .domain(data.map(d =>{return d.job_name}))
+            .range([margin.left, width - margin.right])
+            .padding(0.1)
+
+            let y = d3.scalePow().exponent(0.5)
+            .domain([0, d3.max(dt , d => d3.max(d, d0 => d0[1]))])/////
+            .rangeRound([height - margin.bottom, margin.top])
+
+            // let color = d3.scaleOrdinal()
+            // .domain(dt.map(d => d.key))
+            // .range(d3.quantize(t => d3.interpolateRainbow(t * 0.8 + 0.1), dt.length).reverse())
+            // .unknown("#ccc")
+
+            const color = d3.scaleOrdinal()
+            .domain(dt.map(d => d.key))
+            .range(['#4E001F','#D6747F'])
+
+            console.log(dt.map(d => d.key));
+
+            
+
+            xAxis = g => g
+            .attr("transform", `translate(0,${height - margin.bottom})`)
+            .call(d3.axisBottom(x).tickSizeOuter(0).tickSize(-(height-margin.top)))
+            .call(g => g.selectAll(".domain").remove())
+
+            svg.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .selectAll('text')
+            .attr('transform','rotate(60)')
+            .style("text-anchor", "start")
+            .style('font-size',5)
+            
+
+
+            yAxis = g => g
+    .attr("transform", `translate(${margin.left},0)`)
+    .call(d3.axisLeft(y).ticks(20,'s').tickSize(-(width-margin.left)))
+    // .call(g => g.selectAll(".domain").remove())
+
+            svg.append("g")
+            .attr("class", "axis axis--y")
+            .attr("transform", "translate(0," + margin.left + ")")
+            .call(yAxis)
+
+            svg.append("g")
+            .selectAll("g")
+            .data(dt)
+            .enter()
+            .append('g')
+            .attr("fill", d => {
+                return color(d.key)
+            })
+            .selectAll("rect")
+            .data(d=>{
+                return d
+            })
+            .enter()
+            .append('rect')
+            .attr("x", (d, i) => x(d.data.job_name))
+            .attr("y", d => y(d[1]))
+            .attr("height", d =>{
+                return y(d[0]) - y(d[1])
+            })
+            .attr("width", x.bandwidth());
+
+            
+
+            svg.append('g')
+            .attr('fill','#000')
+            .selectAll('text')
+            .data(dt[1])
+            .enter()
+            .append('text')
+            .attr('x',d=>{
+                return x(d.data.job_name)
+            })
+            .attr('y',d=>{
+               return y(d[1])
+            })
+            // .attr("dy", "0.35em")
+            .text(d=>{
+           
+                return ((d.data.num_hign/(d.data.num_hign+d.data.num_normal))*100).toFixed(2)+'%'
+            })
+            .attr('transform','rotate(0)')
+            .style("text-anchor", "start")
+            .style('font-size',2.5)
+            .attr('dx','-0.5em')
+
+
+        })
+
+    </script>
+</body>
+<style>
+
+.background {
+  fill: #e7e7e7;
+
+}
+
+.axis line {
+  fill: none;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+
+</style>
+</html>
