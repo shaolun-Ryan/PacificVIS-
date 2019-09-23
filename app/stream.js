@@ -26,8 +26,7 @@ const rs = fs.createReadStream('./app/sampleTree_690000.csv')
 
     //监听读取的打开
 rs.on('open',()=>{
-    console.log('开始读取');
-    // console.log(store.state.t);//不得行，nodejs暂时不会如何获取vuex
+    console.log('开始读取');//不得行，nodejs暂时不会如何获取vuex
 })
 
 
@@ -41,16 +40,6 @@ let i = 0
 
 
 let skip = through2({objectMode:true},function (chunk, encoding, callback) {
-
-    // if(chunk.job_name == 'j_926983'){
-    //     i+=1
-
-    // let a = {
-    //     ed: chunk.inst_name
-    // }
-    // this.push(`${JSON.stringify(a)},`)
-    // }
-
 
 
     if(job_arr_exist.indexOf(chunk.job_name) == -1){

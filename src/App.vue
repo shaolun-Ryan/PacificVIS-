@@ -27,7 +27,8 @@ export default {
     color: #333;
     text-align: center;
     line-height: 60px;
-    font-weight: 350
+    font-weight: 500;
+    font-family: Verdana, Geneva, Tahoma, sans-serif
   }
   
 
